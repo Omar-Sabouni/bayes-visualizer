@@ -1,0 +1,16 @@
+{
+  "name": "bayes-multi-evidence",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Sequential Bayesian update and Beta-prior visualizer.",
+  "scripts": {
+    "clean": "node ./scripts/clean.mjs",
+    "build:ts": "tsc -p tsconfig.json",
+    "build:assets": "node ./scripts/build-assets.mjs",
+    "build": "npm run clean && npm run build:ts && npm run build:assets",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.3"
+  }
+}

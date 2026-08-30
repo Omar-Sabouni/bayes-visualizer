@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#232b32">
+  <title>Bayes Multi-Evidence Visualizer</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#mainContent">Skip to visualizer</a>
+
+  <header class="page-header" aria-labelledby="projectTitle">
+    <div>
+      <h1 id="projectTitle">Bayes multi-evidence visualizer</h1>
+      <p class="header-lead">
+        Apply two sequential evidence updates to a binary hypothesis, or update a Beta prior with coin observations.
+      </p>
+    </div>
+    <div class="header-meta">
+      <div class="mode-switch">
+        <label for="modeSelect">Mode</label>
+        <select id="modeSelect" name="modeSelect">
+          <option value="hypothesis">Hypothesis mode</option>
+          <option value="parameter">Parameter mode (coin bias)</option>
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <main id="mainContent" class="story-layout" tabindex="-1">
+    <article class="paper" aria-label="Bayes calculator">
+    <section id="hypothesisControls" class="chapter controls" aria-labelledby="controlsHeading">
+      <h2 id="controlsHeading">Model inputs</h2>
+      <form id="bayesForm" novalidate>
+        <label for="presetSelect">Preset</label>
+        <select id="presetSelect" name="presetSelect"></select>
+        <p id="presetDescription" class="help-text"></p>
+
+        <label for="pAInput"><code>P(A)</code></label>
+        <input id="pAInput" name="pAInput" type="number" min="0" max="1" step="0.001" inputmode="decimal" autocomplete="off">
+
+        <label for="pB1gAInput"><code>P(B1|A)</code></label>
+        <input id="pB1gAInput" name="pB1gAInput" type="number" min="0" max="1" step="0.001" inputmode="decimal" autocomplete="off">
+
+        <label for="pB1gNotAInput"><code>P(B1|~A)</code></label>
+        <input id="pB1gNotAInput" name="pB1gNotAInput" type="number" min="0" max="1" step="0.001" inputmode="decimal" autocomplete="off">
+
+        <label for="pB2gAInput"><code>P(B2|A)</code></label>
+        <input id="pB2gAInput" name="pB2gAInput" type="number" min="0" max="1" step="0.001" inputmode="decimal" autocomplete="off">
+
+        <label for="pB2gNotAInput"><code>P(B2|~A)</code></label>
+        <input id="pB2gNotAInput" name="pB2gNotAInput" type="number" min="0" max="1" step="0.001" inputmode="decimal" autocomplete="off">
+
+        <p class="help-text">All values must be within [0,1].</p>
+        <p id="inputError" class="error-text" role="alert" aria-live="assertive"></p>
+      </form>
+    </section>
+
+    <section id="hypothesisTheory" class="chapter theory" aria-labelledby="theoryHeading">
+      <h2 id="theoryHeading">Sequential update</h2>
+      <p class="chapter-lead">
+        The posterior after <code>B1</code> becomes the prior for the <code>B2</code> update.
+      </p>
+
+      <section class="model-strip" aria-label="Bayesian chain summary">
+        <p><code>P(A)</code></p>
+        <p class="model-arrow">&#8594;</p>
+        <p><code>P(A|B1)</code></p>
+        <p class="model-arrow">&#8594;</p>
+        <p><code>P(A|B1,B2)</code></p>
+      </section>
+
+      <div class="step-nav">
+        <button id="prevStepBtn" type="button">Previous</button>
+        <div id="stepChips" class="step-chips" role="group" aria-label="Theory steps"></div>
+        <button id="nextStepBtn" type="button">Next</button>
+      </div>
+
+      <article class="step-card" aria-live="polite">
+        <p id="stepCounter" class="step-counter"></p>
+        <h3 id="stepTitle"></h3>
+        <p id="stepTheory"></p>
+        <p id="stepFormula" class="formula-line"></p>
+        <p id="stepKey" class="step-key"></p>
+      </article>
+
+      <section class="module-block" aria-labelledby="progressionHeading">
+        <h4 id="progressionHeading">Posterior progression</h4>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Stage</th>
+              <th>Value</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Prior</td>
+              <td id="priorValue"></td>
+            </tr>
+            <tr>
+              <td>After B1</td>
+              <td id="postB1Value"></td>
+            </tr>
+            <tr>
+              <td>After B1, B2</td>
+              <td id="postB1B2Value"></td>
+            </tr>
+          </tbody>
+        </table>
+        <p id="progressionDelta" class="module-note"></p>
+      </section>
+
+      <section id="contribB1Panel" class="module-block" hidden aria-labelledby="contribB1Heading">
+        <h4 id="contribB1Heading">B1 decomposition</h4>
+        <p id="contribB1Text"></p>
+        <div class="stack-track" role="img" aria-label="B1 contribution split">
+          <div id="contribB1A" class="stack-segment a"></div>
+          <div id="contribB1NotA" class="stack-segment nota"></div>
+        </div>
+      </section>
+
+      <section id="contribB2Panel" class="module-block" hidden aria-labelledby="contribB2Heading">
+        <h4 id="contribB2Heading">B2 decomposition</h4>
+        <p id="contribB2Text"></p>
+        <div class="stack-track" role="img" aria-label="B2 contribution split">
+          <div id="contribB2A" class="stack-segment a"></div>
+          <div id="contribB2NotA" class="stack-segment nota"></div>
+        </div>
+      </section>
+
+      <section id="strengthPanel" class="module-block" hidden aria-labelledby="strengthHeading">
+        <h4 id="strengthHeading">Evidence strength</h4>
+        <p>LR1: <strong id="lr1Value"></strong></p>
+        <p>LR2: <strong id="lr2Value"></strong></p>
+        <p>Odds update: <strong id="oddsValue"></strong></p>
+        <p id="strengthNote" class="module-note"></p>
+        <p class="caution-note"><strong>Assumption:</strong> B1 and B2 are conditionally independent given A and ~A.</p>
+      </section>
+    </section>
+
+    <section id="hypothesisResults" class="chapter results" aria-labelledby="resultsHeading">
+      <h2 id="resultsHeading">Computed values</h2>
+      <p id="formulaSubstitute" class="formula-line"></p>
+      <p id="posteriorValue" class="primary-result" aria-live="polite"></p>
+
+      <dl class="stats-grid">
+        <div>
+          <dt><code>P(B1)</code></dt>
+          <dd id="pB1Value">-</dd>
+        </div>
+        <div>
+          <dt><code>P(A|B1)</code></dt>
+          <dd id="pA_B1Value">-</dd>
+        </div>
+        <div>
+          <dt><code>P(B2|B1)</code></dt>
+          <dd id="pB2_B1Value">-</dd>
+        </div>
+        <div>
+          <dt><code>P(A|B1,B2)</code></dt>
+          <dd id="pA_B1B2Value">-</dd>
+        </div>
+        <div>
+          <dt><code>P(B1,B2)</code></dt>
+          <dd id="pB1B2Value">-</dd>
+        </div>
+      </dl>
+      <p id="interpretationText" class="summary-text"></p>
+    </section>
+
+    <section id="hypothesisVisualization" class="chapter visualization" aria-labelledby="visualHeading">
+      <h2 id="visualHeading">Geometric view</h2>
+      <p class="chapter-lead">
+        Circle area represents probability mass; overlap is the conjunction used in the active update.
+      </p>
+      <p id="stepFocus" class="help-text"></p>
+      <svg id="vennSvg" viewBox="0 0 420 260" role="img" aria-labelledby="vennTitle vennDesc" data-focus="prior">
+        <title id="vennTitle">Bayesian Venn diagram</title>
+        <desc id="vennDesc">Event A and current evidence B are shown as circles. Their overlap is A and B.</desc>
+        <rect class="universe" x="10" y="20" width="400" height="220"></rect>
+        <defs>
+          <clipPath id="clipA" clipPathUnits="userSpaceOnUse">
+            <circle id="clipCircleA" cx="170" cy="130" r="70"></circle>
+          </clipPath>
+        </defs>
+        <circle id="circleA" class="venn-a" cx="170" cy="130" r="70"></circle>
+        <circle id="circleB" class="venn-b" cx="250" cy="130" r="60"></circle>
+        <circle id="overlapCircle" class="venn-overlap" cx="250" cy="130" r="60" clip-path="url(#clipA)"></circle>
+
+        <text id="labelA" class="venn-label" x="125" y="48">A</text>
+        <text id="labelB" class="venn-label" x="262" y="54">B</text>
+        <text id="labelIntersection" class="venn-label emphasis" x="177" y="136">A &amp; B</text>
+        <text id="labelPosterior" class="venn-label emphasis" x="205" y="230"></text>
+      </svg>
+    </section>
+
+    <section id="parameterRoot" class="chapter parameter-root" aria-labelledby="parameterHeading" hidden>
+      <h2 id="parameterHeading">Coin-bias update</h2>
+      <p class="chapter-lead">
+        Observed heads and tails update the shape parameters of a Beta prior.
+      </p>
+
+      <section class="model-strip parameter-strip" aria-label="Beta-binomial model summary">
+        <p><code>p ~ Beta(alpha, beta)</code></p>
+        <p class="model-arrow">&#8594;</p>
+        <p><code>x|p ~ Binomial(n, p)</code></p>
+        <p class="model-arrow">&#8594;</p>
+        <p><code>p|x ~ Beta(alpha + heads, beta + tails)</code></p>
+      </section>
+
+      <div class="parameter-layout">
+        <section class="parameter-inputs" aria-labelledby="parameterInputsHeading">
+          <h3 id="parameterInputsHeading">Inputs</h3>
+          <form id="parameterForm" novalidate>
+            <label for="alphaInput"><code>alpha</code> prior shape</label>
+            <input id="alphaInput" name="alphaInput" type="number" min="0.0001" step="0.1" inputmode="decimal" autocomplete="off">
+
+            <label for="betaInput"><code>beta</code> prior shape</label>
+            <input id="betaInput" name="betaInput" type="number" min="0.0001" step="0.1" inputmode="decimal" autocomplete="off">
+
+            <label for="headsInput"><code>heads</code> observed</label>
+            <input id="headsInput" name="headsInput" type="number" min="0" step="1" inputmode="numeric" autocomplete="off">
+
+            <label for="tailsInput"><code>tails</code> observed</label>
+            <input id="tailsInput" name="tailsInput" type="number" min="0" step="1" inputmode="numeric" autocomplete="off">
+
+            <p id="parameterError" class="error-text" role="alert" aria-live="assertive"></p>
+            <p id="posteriorParamText" class="module-note"></p>
+          </form>
+        </section>
+
+        <section class="parameter-curves" aria-labelledby="curveHeading">
+          <h3 id="curveHeading">Distribution shift</h3>
+          <p class="help-text">Left: prior belief shape. Right: posterior after adding the observed counts.</p>
+          <div class="curve-grid">
+            <figure class="curve-card">
+              <figcaption id="priorDensityLabel">Prior</figcaption>
+              <svg class="density-svg" viewBox="0 0 360 220" role="img" aria-label="Prior density curve">
+                <line x1="28" y1="192" x2="332" y2="192" class="axis-line"></line>
+                <line x1="28" y1="192" x2="28" y2="28" class="axis-line"></line>
+                <path id="priorDensityPath" class="density-line prior-line" d=""></path>
+              </svg>
+            </figure>
+            <figure class="curve-card">
+              <figcaption id="posteriorDensityLabel">Posterior</figcaption>
+              <svg class="density-svg" viewBox="0 0 360 220" role="img" aria-label="Posterior density curve">
+                <line x1="28" y1="192" x2="332" y2="192" class="axis-line"></line>
+                <line x1="28" y1="192" x2="28" y2="28" class="axis-line"></line>
+                <path id="posteriorDensityPath" class="density-line posterior-line" d=""></path>
+              </svg>
+            </figure>
+          </div>
+        </section>
+      </div>
+
+      <section class="parameter-interpretation">
+        <h3>Interpretation</h3>
+        <p id="parameterNarrative" class="summary-text"></p>
+      </section>
+    </section>
+    </article>
+  </main>
+
+  <script src="./dist/main.js"></script>
+</body>
+</html>

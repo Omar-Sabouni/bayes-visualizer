@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Bayes theorem calculator with expected counts out of 10,000.">
+  <meta name="theme-color" content="#232b32">
+  <title>Bayes’ rule, by example</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="bayes-core.js" defer></script>
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#mainContent">Skip to calculator</a>
+
+  <header class="site-header">
+    <h1>Bayes’ rule, by example</h1>
+  </header>
+
+  <main id="mainContent" tabindex="-1">
+    <article>
+      <div class="calculator-workspace">
+        <section id="setup" aria-labelledby="setupHeading">
+          <h2 id="setupHeading" class="visually-hidden">The numbers</h2>
+          <form id="bayesForm" novalidate>
+            <fieldset aria-describedby="presetDescription">
+              <legend class="visually-hidden">Bayes model inputs</legend>
+              <p class="scenario-field">
+                <label for="presetSelect">Example</label>
+                <select id="presetSelect" name="presetSelect" aria-describedby="presetDescription"></select>
+                <small id="presetDescription"></small>
+              </p>
+
+              <p class="problem">
+                <span id="pAProseBefore"></span><label class="visually-hidden" for="pAInput"><span id="priorLabel">Condition prevalence</span> P(A)</label><span class="inline-number"><input id="pAInput" name="pAInput" type="number" min="0" max="100" step="any" value="1" inputmode="decimal" aria-describedby="pAHelp pAError">%</span><span id="pAProseAfter"> of people have the condition. </span>
+                <span id="pBgAProseBefore">The test catches </span><label class="visually-hidden" for="pBgAInput"><span id="truePositiveLabel">Test sensitivity</span> P(B|A)</label><span class="inline-number true-evidence-number"><input id="pBgAInput" name="pBgAInput" type="number" min="0" max="100" step="any" value="95" inputmode="decimal" aria-describedby="pBgAHelp pBgAError">%</span><span id="pBgAProseAfter"> of them, </span>
+                <span id="pBgNotAProseBefore">but it also flags </span><label class="visually-hidden" for="pBgNotAInput"><span id="falsePositiveLabel">False-positive rate</span> P(B|not A)</label><span class="inline-number false-evidence-number"><input id="pBgNotAInput" name="pBgNotAInput" type="number" min="0" max="100" step="any" value="5" inputmode="decimal" aria-describedby="pBgNotAHelp pBgNotAError">%</span><span id="pBgNotAProseAfter"> of healthy people.</span>
+              </p>
+              <p id="pAHelp" class="visually-hidden">Percent, from 0 to 100.</p>
+              <p id="pBgAHelp" class="visually-hidden">Percent, from 0 to 100.</p>
+              <p id="pBgNotAHelp" class="visually-hidden">Percent, from 0 to 100.</p>
+              <p id="pAError" class="error" aria-live="polite"></p>
+              <p id="pBgAError" class="error" aria-live="polite"></p>
+              <p id="pBgNotAError" class="error" aria-live="polite"></p>
+            </fieldset>
+          </form>
+          <output id="summaryNarrative" class="visually-hidden" form="bayesForm" for="pAInput pBgAInput pBgNotAInput" aria-live="polite" aria-atomic="true"></output>
+        </section>
+
+        <section id="conditional" aria-labelledby="scenarioQuestion">
+          <h2 id="scenarioQuestion">After a positive test, how likely is the condition?</h2>
+          <strong id="conditionalPosteriorValue">16.1%</strong>
+          <p id="conditionalPosteriorText">Among people with a positive test, 16.1% have the condition.</p>
+          <p class="not-this">Not <strong id="conditionalLikelihoodValue">95.0%</strong>. <span id="conditionalLikelihoodText">Among people who have the condition, 95.0% receive a positive test.</span></p>
+        </section>
+
+        <section id="frequency" aria-labelledby="frequencyHeading">
+          <h2 id="frequencyHeading">Picture 10,000 people</h2>
+          <div class="frequency-layout">
+            <figure id="populationFigure" role="group" aria-labelledby="frequencyHeading" aria-describedby="populationCaption">
+              <canvas id="populationCanvas" width="500" height="500" role="img" aria-label="Population of 10,000 modeled cases: 95 have A and B, 5 have A without B, 495 have B without A, and 9,405 have neither.">The counts are in the key next to this picture.</canvas>
+              <figcaption id="populationCaption"><span class="fig-label">Fig. 1.</span> One mark per expected case.</figcaption>
+            </figure>
+            <div class="population-reading">
+              <p id="frequencyPoolAnswer">590 positive tests. 95 of them come from people with the condition.</p>
+              <dl class="population-key">
+                <div>
+                  <dt><i class="event-dot true-evidence" aria-hidden="true"></i><span id="populationTrueEvidenceLabel">A and B</span></dt>
+                  <dd id="populationTrueEvidence">95</dd>
+                </div>
+                <div>
+                  <dt><i class="event-dot false-evidence" aria-hidden="true"></i><span id="populationFalseEvidenceLabel">not A, but B</span></dt>
+                  <dd id="populationFalseEvidence">495</dd>
+                </div>
+                <div>
+                  <dt><i class="event-dot hypothesis-only" aria-hidden="true"></i><span id="populationHypothesisOnlyLabel">A, not B</span></dt>
+                  <dd id="populationHypothesisOnly">5</dd>
+                </div>
+                <div>
+                  <dt><i class="event-dot neither" aria-hidden="true"></i><span id="populationNeitherLabel">not A, not B</span></dt>
+                  <dd id="populationNeither">9,405</dd>
+                </div>
+              </dl>
+              <figure id="evidenceComposition" role="img" aria-label="Evidence composition. Of all positive tests: condition present, 16.1%; condition absent, 83.9%.">
+                <svg class="evidence-strip" width="100%" height="28" aria-hidden="true" focusable="false">
+                  <rect class="evidence-from-alternative" width="100%" height="28"></rect>
+                  <rect id="evidenceFromHypothesis" class="evidence-hypothesis" width="16.101694915254237%" height="28"></rect>
+                </svg>
+                <figcaption>Just the positives, side by side.</figcaption>
+              </figure>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <section class="appendices" aria-labelledby="appendicesHeading">
+        <h2 id="appendicesHeading">The working</h2>
+
+        <details class="appendix-section count-ledger">
+          <summary>2 × 2 count table</summary>
+          <div class="appendix-body">
+            <div class="table-scroll" role="region" aria-label="Expected case ledger; scroll horizontally if needed" tabindex="0">
+              <table>
+                <caption id="frequencyDescription" class="visually-hidden">Expected counts out of 10,000.</caption>
+                <thead><tr><th scope="col"></th><th id="evidenceColumnHeading" scope="col">Positive test</th><th id="noEvidenceColumnHeading" scope="col">Negative test</th><th scope="col">Total</th></tr></thead>
+                <tbody>
+                  <tr><th id="hypothesisRowHeading" scope="row">Condition present</th><td id="tableTrueEvidence">95</td><td id="tableMiss">5</td><td id="tableHypothesisTotal">100</td></tr>
+                  <tr><th id="notHypothesisRowHeading" scope="row">Condition absent</th><td id="tableFalseEvidence">495</td><td id="tableCorrectReject">9,405</td><td id="tableNotHypothesisTotal">9,900</td></tr>
+                </tbody>
+                <tfoot><tr><th scope="row">Total</th><td id="tableEvidenceTotal">590</td><td id="tableNoEvidenceTotal">9,410</td><td>10,000</td></tr></tfoot>
+              </table>
+            </div>
+          </div>
+        </details>
+
+        <details class="appendix-section">
+          <summary>Derivation and odds form</summary>
+          <section id="posterior" class="appendix-body" aria-labelledby="posteriorHeading">
+            <h2 id="posteriorHeading" class="visually-hidden">Bayes calculation</h2>
+            <p class="general-formula"><code>P(A|B) = P(B|A)P(A) / [P(B|A)P(A) + P(B|not A)P(not A)]</code></p>
+            <p id="formulaSubstitute"></p>
+            <p id="posteriorResult"></p>
+            <h3 id="evidenceStrengthHeading">Odds form</h3>
+            <dl aria-labelledby="evidenceStrengthHeading">
+              <div><dt>Likelihood ratio</dt><dd><strong id="likelihoodRatioValue">19x</strong> — <span id="likelihoodRatioText"></span></dd></div>
+              <div><dt>Odds update</dt><dd id="oddsUpdateText"></dd></div>
+            </dl>
+            <p id="evidenceTakeaway"></p>
+          </section>
+        </details>
+
+        <details class="appendix-section">
+          <summary>Base-rate sensitivity</summary>
+          <section id="base-rate" class="appendix-body" aria-labelledby="baseRateHeading">
+            <h2 id="baseRateHeading" class="visually-hidden">Varying only the prior</h2>
+            <p>Same test, different starting odds.</p>
+            <div class="table-scroll" role="region" aria-label="Base-rate comparison; scroll horizontally if needed" tabindex="0">
+              <table>
+                <caption id="baseRateCaption">Expected evidence per 10,000 with the current test quality</caption>
+                <thead><tr><th scope="col">Prior</th><th scope="col">True B</th><th scope="col">False B</th><th scope="col">Posterior</th><th scope="col">Change</th></tr></thead>
+                <tbody id="baseRateBody"></tbody>
+              </table>
+            </div>
+            <p id="baseRateTakeaway"></p>
+          </section>
+        </details>
+
+        <section id="coin-lab" aria-labelledby="coinLabHeading">
+          <h2 id="coinLabHeading" class="visually-hidden">Beta–Binomial model</h2>
+          <details id="coinLabDetails" class="appendix-section">
+            <summary>Beta–Binomial model</summary>
+            <div class="appendix-body">
+          <p>The same idea for a coin: start with a belief about how often it lands heads, then flip it.</p>
+          <p class="general-formula"><code>Beta(alpha, beta) → Beta(alpha + heads, beta + tails)</code></p>
+
+          <form id="coinForm" novalidate>
+            <fieldset>
+              <legend>Prior and observations</legend>
+              <div class="scenario-field"><label for="coinPresetSelect">Prior and data example</label><select id="coinPresetSelect" name="coinPresetSelect" aria-describedby="coinPresetDescription"></select><small id="coinPresetDescription"></small></div>
+              <div><label for="alphaInput">Prior alpha</label><input id="alphaInput" name="alphaInput" type="number" min="0.1" max="1000" step="any" inputmode="decimal" aria-describedby="alphaHelp alphaError"><small id="alphaHelp" class="visually-hidden">Shape weight for heads.</small><p id="alphaError" class="error" aria-live="polite"></p></div>
+              <div><label for="betaInput">Prior beta</label><input id="betaInput" name="betaInput" type="number" min="0.1" max="1000" step="any" inputmode="decimal" aria-describedby="betaHelp betaError"><small id="betaHelp" class="visually-hidden">Shape weight for tails.</small><p id="betaError" class="error" aria-live="polite"></p></div>
+              <div><label for="headsInput">Observed heads</label><input id="headsInput" name="headsInput" type="number" min="0" max="10000" step="1" inputmode="numeric" aria-describedby="headsHelp headsError"><small id="headsHelp" class="visually-hidden">Whole number from 0 to 10,000.</small><p id="headsError" class="error" aria-live="polite"></p></div>
+              <div><label for="tailsInput">Observed tails</label><input id="tailsInput" name="tailsInput" type="number" min="0" max="10000" step="1" inputmode="numeric" aria-describedby="tailsHelp tailsError"><small id="tailsHelp" class="visually-hidden">Whole number from 0 to 10,000.</small><p id="tailsError" class="error" aria-live="polite"></p></div>
+            </fieldset>
+          </form>
+
+          <figure class="density-figure" aria-labelledby="densityHeading" aria-describedby="densityDescription">
+            <figcaption><h3 id="densityHeading">Prior and posterior density</h3><p id="densityDescription" class="visually-hidden">Both curves share the same scales.</p></figcaption>
+            <div class="chart-scroll" role="region" aria-label="Coin-bias density chart; scroll horizontally if needed" tabindex="0">
+              <svg id="densitySvg" width="720" height="360" viewBox="0 0 720 360" role="img" aria-labelledby="densitySvgTitle densitySvgDesc">
+                <title id="densitySvgTitle">Coin bias prior and posterior distributions</title><desc id="densitySvgDesc">Prior Beta 1,1 and posterior Beta 9,3 after eight heads and two tails.</desc>
+                <g class="chart-grid" aria-hidden="true"><line x1="60" y1="300" x2="680" y2="300"></line><line x1="60" y1="36" x2="60" y2="300"></line></g>
+                <path id="priorDensityPath" class="density-line prior-density" d=""></path><path id="posteriorDensityPath" class="density-line posterior-density" d=""></path>
+                <path id="priorShapeGuidePath" class="density-line shape-guide" d="" hidden></path><path id="posteriorShapeGuidePath" class="density-line shape-guide" d="" hidden></path>
+                <line id="priorMeanLine" class="mean-line prior-mean" x1="370" y1="54" x2="370" y2="300"></line><line id="posteriorMeanLine" class="mean-line posterior-mean" x1="525" y1="54" x2="525" y2="300"></line>
+                <g class="chart-labels" aria-hidden="true"><text x="60" y="326">0</text><text x="215" y="326">0.25</text><text x="370" y="326">0.50</text><text x="525" y="326">0.75</text><text x="680" y="326">1</text><text x="370" y="350" text-anchor="middle">Probability of heads</text></g>
+              </svg>
+            </div>
+            <ul class="density-key"><li>Before: solid</li><li>After: dashed</li><li>Means: dotted and dash-dot</li><li id="shapeGuideLegend" hidden>Dotted guide: rescaled to show shape</li></ul>
+            <p id="densityScaleNote"></p>
+          </figure>
+
+          <div class="table-scroll" role="region" aria-label="Distribution statistics; scroll horizontally if needed" tabindex="0">
+            <table>
+              <caption class="visually-hidden">The chart as numbers</caption>
+              <thead><tr><th scope="col">Distribution</th><th scope="col">Parameters</th><th scope="col">Mean</th><th scope="col">Standard deviation</th></tr></thead>
+              <tbody>
+                <tr><th scope="row">Prior</th><td id="priorParameterCell">Beta(1, 1)</td><td id="priorMeanCell">50.0%</td><td id="priorSdCell">28.9%</td></tr>
+                <tr><th scope="row">Posterior</th><td id="posteriorParameterCell">Beta(9, 3)</td><td id="posteriorMeanCell">75.0%</td><td id="posteriorSdCell">12.0%</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p id="coinNarrative" aria-live="polite" aria-atomic="true"></p>
+            </div>
+        </details>
+        </section>
+      </section>
+    </article>
+  </main>
+
+</body>
+</html>

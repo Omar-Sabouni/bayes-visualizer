@@ -1,0 +1,16 @@
+# Node / TypeScript
+**/node_modules/
+**/dist/
+*.log
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# IDEs
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db

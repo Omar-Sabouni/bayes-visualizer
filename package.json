@@ -1,0 +1,14 @@
+{
+  "name": "bayes-theorem-visualizer",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Bayes theorem calculator with natural-frequency and Beta-Binomial views.",
+  "scripts": {
+    "test": "node --test tests/*.test.js",
+    "check:syntax": "node --check bayes-core.js && node --check script.js",
+    "check": "npm run check:syntax && npm test"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

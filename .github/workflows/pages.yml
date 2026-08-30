@@ -1,0 +1,54 @@
+name: Deploy Pages
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Use Node.js 22
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+
+      - name: Verify canonical app
+        run: npm run check
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v6
+
+      - name: Prepare isolated static artifact
+        run: |
+          site_dir="${RUNNER_TEMP}/bayes-site"
+          mkdir -p "${site_dir}"
+          cp -r index.html styles.css script.js bayes-core.js fonts "${site_dir}/"
+          touch "${site_dir}/.nojekyll"
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: ${{ runner.temp }}/bayes-site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

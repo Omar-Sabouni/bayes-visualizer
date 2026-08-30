@@ -1,0 +1,311 @@
+@font-face { font-family: "Libre Caslon Text"; font-weight: 400; font-display: swap; src: url("fonts/libre-caslon-text-latin-400-normal.woff2") format("woff2"); }
+@font-face { font-family: "Libre Caslon Text"; font-style: italic; font-weight: 400; font-display: swap; src: url("fonts/libre-caslon-text-latin-400-italic.woff2") format("woff2"); }
+@font-face { font-family: "Libre Caslon Text"; font-weight: 700; font-display: swap; src: url("fonts/libre-caslon-text-latin-700-normal.woff2") format("woff2"); }
+
+/* A worked example from a two-colour textbook: black ink plus one spot blue. */
+:root {
+  color-scheme: light;
+  --page: #ffffff;
+  --ink: #1b1b1b;
+  --muted: #5a5a5a;
+  --rule: #cfcfcf;
+  --spot: #1f4fa3;
+  --spot-tint: #b7c8e8;
+  --true-evidence: #1f4fa3;
+  --hypothesis-only: #b7c8e8;
+  --false-evidence: #1b1b1b;
+  --neither: #e6e6e6;
+  --danger: #b3261e;
+  --serif: "Libre Caslon Text", "Iowan Old Style", Georgia, serif;
+  --code: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+
+html,
+body { margin: 0; background: var(--page); }
+
+body {
+  min-width: 320px;
+  color: var(--ink);
+  font-family: var(--serif);
+  font-size: 18px;
+  line-height: 1.6;
+  font-variant-numeric: lining-nums tabular-nums;
+}
+
+a { color: var(--spot); }
+:focus-visible { outline: 2px solid var(--spot); outline-offset: 3px; }
+#mainContent:focus { outline: none; }
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  overflow: hidden !important;
+  clip: rect(0 0 0 0) !important;
+  white-space: nowrap !important;
+}
+
+.skip-link {
+  position: fixed;
+  top: 8px;
+  left: 8px;
+  padding: 6px 10px;
+  color: var(--page);
+  background: var(--ink);
+  transform: translateY(-200%);
+}
+.skip-link:focus { transform: none; }
+
+.site-header,
+main { max-width: 1040px; margin: 0 auto; padding-inline: 28px; }
+
+.site-header { padding-top: 56px; }
+
+.site-header h1 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 400;
+  font-style: italic;
+  color: var(--muted);
+}
+
+main { padding-bottom: 80px; }
+
+h2 { margin: 0 0 12px; font-size: 22px; font-weight: 700; line-height: 1.3; }
+h3 { margin: 24px 0 8px; font-size: 18px; font-weight: 700; }
+code { font-family: var(--code); font-size: 0.85em; }
+
+/* The problem, with the numbers written into it */
+#setup { margin-top: 20px; }
+fieldset { min-width: 0; margin: 0; padding: 0; border: 0; }
+
+.scenario-field { margin: 0 0 18px; font-size: 16px; color: var(--muted); }
+.scenario-field label { margin-right: 6px; }
+.scenario-field small { margin-left: 10px; font-size: 16px; font-style: italic; }
+
+select {
+  padding: 2px 4px;
+  border: 0;
+  border-bottom: 1px solid var(--ink);
+  border-radius: 0;
+  color: var(--ink);
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
+}
+
+.problem {
+  max-width: 30ch;
+  margin: 0;
+  font-size: 34px;
+  line-height: 1.45;
+}
+
+.inline-number { white-space: nowrap; }
+
+.inline-number input {
+  width: 2.4ch;
+  padding: 0 0.05em 0 0;
+  border: 0;
+  border-bottom: 2px solid currentColor;
+  border-radius: 0;
+  color: inherit;
+  background: transparent;
+  font: inherit;
+  text-align: right;
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.inline-number input::-webkit-outer-spin-button,
+.inline-number input::-webkit-inner-spin-button { margin: 0; -webkit-appearance: none; }
+.inline-number input:hover { background: #f2f5fb; }
+.true-evidence-number { color: var(--true-evidence); }
+.false-evidence-number { color: var(--false-evidence); }
+
+.error { margin: 6px 0 0; color: var(--danger); font-size: 16px; }
+.error:empty { display: none; }
+
+/* The answer */
+#conditional { margin-top: 48px; }
+
+#conditional h2 { font-size: 24px; font-weight: 400; font-style: italic; }
+
+#conditionalPosteriorValue {
+  display: block;
+  color: var(--spot);
+  font-size: clamp(88px, 14vw, 148px);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+#conditionalPosteriorText { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+
+.not-this { max-width: 52ch; margin: 14px 0 0; color: var(--muted); font-size: 16px; }
+
+.not-this strong {
+  font-weight: 400;
+  text-decoration: line-through;
+  text-decoration-color: var(--danger);
+  text-decoration-thickness: 2px;
+}
+
+/* The picture */
+#frequency { margin-top: 64px; }
+
+.frequency-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 500px) minmax(0, 1fr);
+  gap: 40px;
+  align-items: start;
+}
+
+#populationFigure { margin: 0; }
+
+#populationCanvas {
+  display: block;
+  width: 100%;
+  max-width: 500px;
+  height: auto;
+  aspect-ratio: 1;
+  image-rendering: pixelated;
+}
+
+#populationCaption { margin-top: 8px; color: var(--muted); font-size: 15px; }
+.fig-label { font-variant: small-caps; color: var(--ink); }
+
+#frequencyPoolAnswer { margin: 0 0 16px; font-size: 20px; }
+
+.population-key { margin: 0; }
+
+.population-key > div {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+.population-key dt,
+.population-key dd { margin: 0; }
+.population-key dd { text-align: right; }
+
+.event-dot {
+  display: inline-block;
+  width: 0.7em;
+  height: 0.7em;
+  margin-right: 8px;
+  vertical-align: 0;
+}
+
+.event-dot.true-evidence { background: var(--true-evidence); }
+.event-dot.hypothesis-only { background: var(--hypothesis-only); }
+.event-dot.false-evidence { background: var(--false-evidence); }
+.event-dot.neither { background: var(--neither); }
+
+#evidenceComposition { margin: 24px 0 0; }
+.evidence-strip { display: block; }
+.evidence-from-alternative { fill: var(--false-evidence); }
+.evidence-hypothesis { fill: var(--true-evidence); }
+#evidenceComposition figcaption { margin-top: 6px; color: var(--muted); font-size: 15px; font-style: italic; }
+
+/* The working */
+.appendices { margin-top: 72px; border-top: 2px solid var(--ink); }
+.appendices > h2 { margin-top: 12px; font-size: 18px; font-variant: small-caps; letter-spacing: 0.02em; }
+
+.appendix-section { border-bottom: 1px solid var(--rule); }
+
+.appendix-section > summary {
+  padding: 12px 0;
+  cursor: pointer;
+  font-size: 20px;
+}
+
+.appendix-section > summary:hover { color: var(--spot); }
+.appendix-body { padding: 0 0 24px; }
+.appendix-body > :last-child { margin-bottom: 0; }
+
+.general-formula { margin: 12px 0; }
+#formulaSubstitute,
+#posteriorResult { margin: 8px 0; }
+#posterior dl > div { display: grid; grid-template-columns: 11em minmax(0, 1fr); gap: 12px; padding: 4px 0; }
+#posterior dt { color: var(--muted); }
+#posterior dd { margin: 0; }
+
+.table-scroll { max-width: 100%; overflow-x: auto; }
+
+table { border-collapse: collapse; font-size: 17px; }
+caption { padding-bottom: 6px; color: var(--muted); font-style: italic; text-align: left; }
+thead th { border-bottom: 1px solid var(--ink); font-weight: 700; }
+tbody tr:first-child > * { padding-top: 8px; }
+tfoot > tr > * { border-top: 1px solid var(--ink); }
+th,
+td { padding: 4px 24px 4px 0; text-align: left; vertical-align: top; }
+td { text-align: right; }
+tbody th { font-weight: 400; }
+tr[aria-current="true"] > * { color: var(--spot); font-weight: 700; }
+
+#base-rate > p { margin: 8px 0 12px; }
+
+/* Coin example */
+#coin-lab .appendix-body > p { max-width: 62ch; margin: 0 0 12px; }
+#coin-lab fieldset { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px 20px; }
+#coin-lab legend { margin-bottom: 8px; font-weight: 700; }
+#coin-lab .scenario-field { grid-column: 1 / -1; margin: 0; }
+#coin-lab label { display: block; color: var(--muted); font-size: 16px; }
+
+#coin-lab input {
+  width: 100%;
+  padding: 2px 0;
+  border: 0;
+  border-bottom: 1px solid var(--ink);
+  border-radius: 0;
+  background: transparent;
+  font: inherit;
+}
+
+.density-figure { margin: 24px 0 0; }
+.density-figure figcaption h3 { margin: 0 0 8px; }
+.chart-scroll { max-width: 100%; overflow-x: auto; }
+.chart-scroll svg { display: block; max-width: 100%; height: auto; }
+
+.chart-grid line,
+.density-line,
+.mean-line { stroke: currentColor; vector-effect: non-scaling-stroke; }
+.chart-grid line { stroke: var(--ink); }
+.density-line { fill: none; stroke-width: 2; }
+.prior-density, .prior-mean, #priorShapeGuidePath { stroke: var(--ink); }
+.posterior-density, .posterior-mean, #posteriorShapeGuidePath { stroke: var(--spot); }
+.posterior-density { stroke-dasharray: 8 4; }
+.shape-guide, .prior-mean { stroke-dasharray: 2 4; }
+.mean-line { stroke-width: 1.5; }
+.posterior-mean { stroke-dasharray: 9 3 2 3; }
+.chart-labels { fill: var(--muted); font-family: var(--serif); font-size: 13px; }
+
+.density-key { display: flex; flex-wrap: wrap; gap: 4px 20px; margin: 10px 0; padding: 0; color: var(--muted); font-size: 15px; list-style: none; }
+#densityScaleNote { color: var(--muted); font-size: 15px; }
+#densityScaleNote:empty { display: none; }
+
+@media (max-width: 860px) {
+  .frequency-layout { grid-template-columns: minmax(0, 1fr); }
+  .problem { font-size: 28px; }
+}
+
+@media (max-width: 520px) {
+  .site-header,
+  main { padding-inline: 16px; }
+  .site-header { padding-top: 32px; }
+  .problem { font-size: 24px; }
+  #posterior dl > div { grid-template-columns: minmax(0, 1fr); gap: 0; }
+}
+
+@media print {
+  .skip-link { display: none; }
+  details.appendix-section > summary { list-style: none; cursor: default; }
+  details.appendix-section > summary::marker,
+  details.appendix-section > summary::-webkit-details-marker { display: none; }
+}
