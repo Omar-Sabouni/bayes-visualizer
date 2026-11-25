@@ -348,11 +348,11 @@ test("an invalid Bayes input marks the field and clears every stale result", () 
   assert.equal(env.byId("tableTrueEvidence").textContent, "—");
   assert.equal(env.byId("populationTrueEvidence").textContent, "—");
   assert.equal(env.byId("populationNeither").textContent, "—");
-  assert.match(env.byId("populationCanvas").getAttribute("aria-label"), /unavailable/i);
+  assert.match(env.byId("populationCanvas").getAttribute("aria-label"), /invalid/i);
   assert.equal(env.byId("evidenceFromHypothesis").getAttribute("width"), "0%");
   assert.equal(env.byId("evidenceComposition").hidden, true);
   assert.equal(env.byId("baseRateBody").children.length, 1);
-  assert.match(env.byId("posteriorResult").textContent, /unavailable/i);
+  assert.match(env.byId("posteriorResult").textContent, /—/);
   assert.doesNotMatch(env.byId("summaryNarrative").textContent, /16\.1|previous result/i);
 
   priorNumber.value = "1";
@@ -423,7 +423,7 @@ test("an individually scaled guide reveals an extreme compressed Beta curve", ()
 
   assert.equal(env.byId("posteriorShapeGuidePath").getAttribute("hidden"), null);
   assert.match(env.byId("posteriorShapeGuidePath").getAttribute("d"), /^M\s/);
-  assert.match(env.byId("densityScaleNote").textContent, /dotted guide/i);
+  assert.match(env.byId("densityDescription").textContent, /dotted line/i);
   assert.equal(env.byId("shapeGuideLegend").hidden, false);
 });
 
@@ -443,5 +443,5 @@ test("an invalid Beta field clears paths, markers, and numerical output", () => 
   assert.equal(env.byId("posteriorMeanLine").style.display, "none");
   assert.equal(env.byId("priorParameterCell").textContent, "—");
   assert.equal(env.byId("posteriorParameterCell").textContent, "—");
-  assert.match(env.byId("coinNarrative").textContent, /correct the highlighted input/i);
+  assert.match(env.byId("coinNarrative").textContent, /fix the highlighted input/i);
 });

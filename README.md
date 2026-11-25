@@ -45,7 +45,7 @@ If `P(B)` is zero, the posterior and evidence-strength interpretation are undefi
 
 ## Advanced Beta-Binomial lab
 
-Expand **Beta–Binomial model** in the appendix to explore a different Bayesian question: estimating a coin's probability of heads. It starts with a `Beta(1, 1)` prior and observes 8 heads and 2 tails. Prior presets provide approachable starting points, while the alpha and beta fields allow direct control.
+Expand **Beta–Binomial model** in the appendix to explore a different Bayesian question: estimating a coin's probability of heads. It starts with a `Beta(1, 1)` prior and observes 8 heads and 2 tails. Pick a prior preset or set alpha and beta directly.
 
 - Alpha and beta must each be finite values from 0.1 through 1,000.
 - Heads and tails must each be safe integers from 0 through 10,000.
