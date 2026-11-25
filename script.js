@@ -13,7 +13,7 @@
     {
       id: "medical-screening",
       label: "Medical screening",
-      description: "Made-up screening numbers.",
+      description: "These screening numbers are made up for this example.",
       prose: [["", " of people have the condition. "], ["The test catches ", " of them, "], ["but it also flags ", " of healthy people."]],
       question: "After a positive test, how likely is the condition?",
       priorLabel: "Condition prevalence",
@@ -35,7 +35,7 @@
     {
       id: "quality-inspection",
       label: "Quality inspection",
-      description: "An inspection camera on a production line.",
+      description: "",
       prose: [["", " of parts come off the line defective. "], ["The camera catches ", " of them, "], ["but it also flags ", " of good parts."]],
       question: "After an item is flagged, how likely is it to be defective?",
       priorLabel: "Defect rate",
@@ -57,7 +57,7 @@
     {
       id: "spam-filter",
       label: "Spam filter",
-      description: "An email spam filter.",
+      description: "",
       prose: [["", " of incoming mail is spam. "], ["The filter catches ", " of it, "], ["but it also flags ", " of real mail."]],
       question: "After a message is flagged, how likely is it to be spam?",
       priorLabel: "Spam rate",
@@ -79,7 +79,7 @@
     {
       id: "abstract",
       label: "Abstract A and B",
-      description: "Plain A and B.",
+      description: "",
       prose: [["A is true ", " of the time. "], ["When it is, B happens ", " of the time; "], ["when it isn't, B still happens ", " of the time."]],
       question: "After observing B, how likely is A?",
       priorLabel: "Prior probability",
@@ -104,25 +104,25 @@
     {
       id: "uniform-eight-two",
       label: "Uniform prior, 8 heads / 2 tails",
-      description: "No prior belief, then 8 heads and 2 tails.",
+      description: "",
       values: { alpha: 1, beta: 1, heads: 8, tails: 2 }
     },
     {
       id: "weak-fair",
       label: "Weak fair-coin prior, 8 heads / 2 tails",
-      description: "A mild belief that the coin is fair, then the same 10 flips.",
+      description: "",
       values: { alpha: 2, beta: 2, heads: 8, tails: 2 }
     },
     {
       id: "strong-fair",
       label: "Strong fair-coin prior, 8 heads / 2 tails",
-      description: "A firm belief that the coin is fair, then the same 10 flips.",
+      description: "",
       values: { alpha: 20, beta: 20, heads: 8, tails: 2 }
     },
     {
       id: "no-observations",
       label: "No observations",
-      description: "With no data, the posterior is exactly the prior.",
+      description: "With no flips, the posterior equals the prior.",
       values: { alpha: 2, beta: 2, heads: 0, tails: 0 }
     }
   ];
@@ -411,8 +411,8 @@
     ui.frequencyPoolAnswer.textContent =
       model.posterior === null
         ? "Nobody gets " + activeScenario.evidenceLabel.toLowerCase() + ", so there is nothing to work out."
-        : count(frequency.evidence.total) + " " + activeScenario.evidencePlural + ". " +
-          count(frequency.evidence.fromHypothesis) + " of them come from " +
+        : "Of " + count(frequency.evidence.total) + " " + activeScenario.evidencePlural + ", " +
+          count(frequency.evidence.fromHypothesis) + " come from " +
           activeScenario.hypothesisSource + ".";
 
     ui.tableTrueEvidence.textContent = count(frequency.hypothesis.evidence);

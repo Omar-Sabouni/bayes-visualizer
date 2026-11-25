@@ -48,7 +48,7 @@ test("the population view exposes one mark per modeled case and exact text alter
     "populationNeither",
     "frequencyDescription"
   ].forEach((id) => assert.match(ROOT_HTML, new RegExp(`id="${id}"`)));
-  assert.match(ROOT_HTML, /One mark per expected case/);
+  assert.match(ROOT_HTML, /Each mark is one expected case/);
   assert.match(ROOT_HTML, /2 × 2 count table/);
 });
 

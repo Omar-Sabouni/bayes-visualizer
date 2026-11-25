@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Bayes theorem calculator with expected counts out of 10,000.">
   <meta name="theme-color" content="#232b32">
-  <title>Bayes’ rule, by example</title>
+  <title>Bayes theorem calculator</title>
   <link rel="stylesheet" href="styles.css">
   <script src="bayes-core.js" defer></script>
   <script src="script.js" defer></script>
@@ -14,7 +14,7 @@
   <a class="skip-link" href="#mainContent">Skip to calculator</a>
 
   <header class="site-header">
-    <h1>Bayes’ rule, by example</h1>
+    <h1>Bayes theorem calculator</h1>
   </header>
 
   <main id="mainContent" tabindex="-1">
@@ -51,15 +51,15 @@
           <h2 id="scenarioQuestion">After a positive test, how likely is the condition?</h2>
           <strong id="conditionalPosteriorValue">16.1%</strong>
           <p id="conditionalPosteriorText">Among people with a positive test, 16.1% have the condition.</p>
-          <p class="not-this">Not <strong id="conditionalLikelihoodValue">95.0%</strong>. <span id="conditionalLikelihoodText">Among people who have the condition, 95.0% receive a positive test.</span></p>
+          <p class="not-this">It is not <strong id="conditionalLikelihoodValue">95.0%</strong>. <span id="conditionalLikelihoodText">Among people who have the condition, 95.0% receive a positive test.</span></p>
         </section>
 
         <section id="frequency" aria-labelledby="frequencyHeading">
-          <h2 id="frequencyHeading">Picture 10,000 people</h2>
+          <h2 id="frequencyHeading">Out of 10,000 people</h2>
           <div class="frequency-layout">
             <figure id="populationFigure" role="group" aria-labelledby="frequencyHeading" aria-describedby="populationCaption">
               <canvas id="populationCanvas" width="500" height="500" role="img" aria-label="Population of 10,000 modeled cases: 95 have A and B, 5 have A without B, 495 have B without A, and 9,405 have neither.">The counts are in the key next to this picture.</canvas>
-              <figcaption id="populationCaption"><span class="fig-label">Fig. 1.</span> One mark per expected case.</figcaption>
+              <figcaption id="populationCaption">Each mark is one expected case.</figcaption>
             </figure>
             <div class="population-reading">
               <p id="frequencyPoolAnswer">590 positive tests. 95 of them come from people with the condition.</p>
@@ -94,7 +94,7 @@
       </div>
 
       <section class="appendices" aria-labelledby="appendicesHeading">
-        <h2 id="appendicesHeading">The working</h2>
+        <h2 id="appendicesHeading">Calculations</h2>
 
         <details class="appendix-section count-ledger">
           <summary>2 × 2 count table</summary>
@@ -133,7 +133,6 @@
           <summary>Base-rate sensitivity</summary>
           <section id="base-rate" class="appendix-body" aria-labelledby="baseRateHeading">
             <h2 id="baseRateHeading" class="visually-hidden">Varying only the prior</h2>
-            <p>Same test, different starting odds.</p>
             <div class="table-scroll" role="region" aria-label="Base-rate comparison; scroll horizontally if needed" tabindex="0">
               <table>
                 <caption id="baseRateCaption">Expected evidence per 10,000 with the current test quality</caption>
@@ -150,7 +149,7 @@
           <details id="coinLabDetails" class="appendix-section">
             <summary>Beta–Binomial model</summary>
             <div class="appendix-body">
-          <p>The same idea for a coin: start with a belief about how often it lands heads, then flip it.</p>
+          <p>This applies the same update to a coin's chance of landing heads.</p>
           <p class="general-formula"><code>Beta(alpha, beta) → Beta(alpha + heads, beta + tails)</code></p>
 
           <form id="coinForm" novalidate>
@@ -176,7 +175,7 @@
                 <g class="chart-labels" aria-hidden="true"><text x="60" y="326">0</text><text x="215" y="326">0.25</text><text x="370" y="326">0.50</text><text x="525" y="326">0.75</text><text x="680" y="326">1</text><text x="370" y="350" text-anchor="middle">Probability of heads</text></g>
               </svg>
             </div>
-            <ul class="density-key"><li>Before: solid</li><li>After: dashed</li><li>Means: dotted and dash-dot</li><li id="shapeGuideLegend" hidden>Dotted guide: rescaled to show shape</li></ul>
+            <ul class="density-key"><li>Prior: solid line</li><li>Posterior: dashed line</li><li>Means: dotted lines</li><li id="shapeGuideLegend" hidden>Thin dotted line: the flattened curve at a larger scale</li></ul>
             <p id="densityScaleNote"></p>
           </figure>
 

@@ -268,7 +268,7 @@ test("controller bootstraps the medical example and default Beta update", () => 
   assert.match(env.byId("populationCanvas").getAttribute("aria-label"), /10,000 modeled cases/i);
   assert.equal(
     env.byId("frequencyPoolAnswer").textContent,
-    "590 positive tests. 95 of them come from people with the condition."
+    "Of 590 positive tests, 95 come from people with the condition."
   );
   assert.ok(
     Math.abs(parseFloat(env.byId("evidenceFromHypothesis").getAttribute("width")) - (95 / 590) * 100) < 1e-9
