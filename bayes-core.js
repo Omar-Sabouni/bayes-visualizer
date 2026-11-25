@@ -165,12 +165,12 @@
       }
 
       if (parsed.reason === "number") {
-        errors[field] = "Use a finite number from 0 to 100.";
+        errors[field] = "Enter a percentage from 0 to 100.";
         return;
       }
 
       if (parsed.value < LIMITS.percent.min || parsed.value > LIMITS.percent.max) {
-        errors[field] = "Use a percentage from 0 to 100.";
+        errors[field] = "Enter a percentage from 0 to 100.";
         return;
       }
 
@@ -208,12 +208,12 @@
       }
 
       if (parsed.reason === "number") {
-        errors[field] = "Use a finite number from 0.1 to 1,000.";
+        errors[field] = "Enter a value from 0.1 to 1,000.";
         return;
       }
 
       if (parsed.value < limit.min || parsed.value > limit.max) {
-        errors[field] = "Use a value from 0.1 to 1,000.";
+        errors[field] = "Enter a value from 0.1 to 1,000.";
         return;
       }
 
@@ -229,12 +229,12 @@
       }
 
       if (parsed.reason === "number" || !Number.isSafeInteger(parsed.value)) {
-        errors[field] = "Use a whole number from 0 to 10,000.";
+        errors[field] = "Enter a whole number from 0 to 10,000.";
         return;
       }
 
       if (parsed.value < LIMITS.count.min || parsed.value > LIMITS.count.max) {
-        errors[field] = "Use a whole number from 0 to 10,000.";
+        errors[field] = "Enter a whole number from 0 to 10,000.";
         return;
       }
 

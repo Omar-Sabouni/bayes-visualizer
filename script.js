@@ -104,19 +104,19 @@
     {
       id: "uniform-eight-two",
       label: "Uniform prior, 8 heads / 2 tails",
-      description: "Begin open-minded, then update with a short heads-heavy sample.",
+      description: "No prior belief, then 8 heads and 2 tails.",
       values: { alpha: 1, beta: 1, heads: 8, tails: 2 }
     },
     {
       id: "weak-fair",
       label: "Weak fair-coin prior, 8 heads / 2 tails",
-      description: "A mild belief in a fair coin is shifted by the same ten observations.",
+      description: "A mild belief that the coin is fair, then the same 10 flips.",
       values: { alpha: 2, beta: 2, heads: 8, tails: 2 }
     },
     {
       id: "strong-fair",
       label: "Strong fair-coin prior, 8 heads / 2 tails",
-      description: "A concentrated prior moves less when the sample is small.",
+      description: "A firm belief that the coin is fair, then the same 10 flips.",
       values: { alpha: 20, beta: 20, heads: 8, tails: 2 }
     },
     {
@@ -241,8 +241,7 @@
   function wireProbabilityControls() {
     ui.presetSelect.addEventListener("change", () => {
       if (ui.presetSelect.value === "custom") {
-        ui.presetDescription.textContent =
-          "Custom values using the " + activeScenario.label.toLowerCase() + " scenario.";
+        ui.presetDescription.textContent = "";
         renderScenarioLanguage();
         updateBayesFromInputs();
         return;
@@ -265,7 +264,7 @@
   function wireCoinControls() {
     ui.coinPresetSelect.addEventListener("change", () => {
       if (ui.coinPresetSelect.value === "custom") {
-        ui.coinPresetDescription.textContent = "Using manually entered prior and observation values.";
+        ui.coinPresetDescription.textContent = "";
         updateCoinFromInputs();
         return;
       }
@@ -279,7 +278,7 @@
     [ui.alphaInput, ui.betaInput, ui.headsInput, ui.tailsInput].forEach((input) => {
       input.addEventListener("input", () => {
         ui.coinPresetSelect.value = "custom";
-        ui.coinPresetDescription.textContent = "Using manually entered prior and observation values.";
+        ui.coinPresetDescription.textContent = "";
         updateCoinFromInputs();
       });
     });
@@ -370,7 +369,7 @@
     Object.entries(bindings).forEach(([field, elements]) => {
       const message = errors[field] || "";
       elements[0].setAttribute("aria-invalid", message ? "true" : "false");
-      elements[1].textContent = message ? "Error: " + message : "";
+      elements[1].textContent = message;
     });
   }
 
@@ -598,7 +597,7 @@
         "The evidence is equally likely either way, so it is neutral: each posterior stays equal to its prior.";
     } else {
       ui.baseRateTakeaway.textContent =
-        "The evidence quality is unchanged across the table. Higher starting prevalence changes the mix of true and false paths in the evidence pool.";
+        "The test is the same in every row. Only the starting rate changes.";
     }
   }
 
@@ -610,7 +609,7 @@
         "Evidence strength cannot be interpreted because the evidence never occurs in this model.";
       ui.oddsUpdateText.textContent = "The odds update is undefined when P(B) = 0.";
       ui.evidenceTakeaway.textContent =
-        "Adjust at least one path into the evidence pool before interpreting its strength.";
+        "Set the second or third percentage above 0%.";
       return;
     }
 
@@ -628,16 +627,15 @@
     ui.oddsUpdateText.textContent =
       formatOdds(model.priorOdds) + " × " + formatLikelihoodFactor(model.likelihoodRatio) +
       " = " + formatOdds(model.posteriorOdds) + ".";
-    ui.evidenceTakeaway.textContent =
-      "Evidence changes odds by a multiplier, but the prior still determines where that multiplication begins.";
+    ui.evidenceTakeaway.textContent = "";
   }
 
   function renderBayesUnavailable() {
     ui.summaryNarrative.textContent = "Enter valid percentages from 0 to 100.";
     ui.conditionalLikelihoodValue.textContent = "—";
     ui.conditionalPosteriorValue.textContent = "—";
-    ui.conditionalLikelihoodText.textContent = "Enter valid percentages to compare these two conditional probabilities.";
-    ui.conditionalPosteriorText.textContent = "No previous result is retained while the form is invalid.";
+    ui.conditionalLikelihoodText.textContent = "";
+    ui.conditionalPosteriorText.textContent = "Enter percentages from 0 to 100.";
 
     [
       ui.tableTrueEvidence, ui.tableMiss, ui.tableHypothesisTotal,
@@ -650,7 +648,7 @@
     ].forEach(setDash);
     ui.populationCanvas.setAttribute(
       "aria-label",
-      "Population graphic unavailable while an input is invalid."
+      "No picture: an input is invalid."
     );
     if (typeof ui.populationCanvas.getContext === "function") {
       const context = ui.populationCanvas.getContext("2d");
@@ -658,24 +656,24 @@
         context.clearRect(0, 0, 500, 500);
       }
     }
-    ui.frequencyDescription.textContent = "Expected counts are unavailable while an input is invalid.";
-    ui.frequencyPoolAnswer.textContent = "Unavailable.";
-    clearEvidenceComposition("Evidence composition unavailable while an input is invalid.");
-    ui.formulaSubstitute.textContent = "Correct the highlighted input to substitute values into Bayes theorem.";
-    ui.posteriorResult.textContent = "Posterior P(A|B): unavailable";
+    ui.frequencyDescription.textContent = "No counts: an input is invalid.";
+    ui.frequencyPoolAnswer.textContent = "";
+    clearEvidenceComposition("No counts: an input is invalid.");
+    ui.formulaSubstitute.textContent = "";
+    ui.posteriorResult.textContent = "Posterior P(A|B): —";
     renderUnavailableBaseRateRow();
-    ui.baseRateCaption.textContent = "Base-rate comparison unavailable while an input is invalid";
-    ui.baseRateTakeaway.textContent = "Base-rate comparisons are hidden until the model is valid.";
-    ui.likelihoodRatioText.textContent = "Evidence strength is unavailable while the model is invalid.";
-    ui.oddsUpdateText.textContent = "Odds update unavailable.";
-    ui.evidenceTakeaway.textContent = "Enter three valid percentages from 0 to 100.";
+    ui.baseRateCaption.textContent = "Expected evidence per 10,000";
+    ui.baseRateTakeaway.textContent = "";
+    ui.likelihoodRatioText.textContent = "";
+    ui.oddsUpdateText.textContent = "—";
+    ui.evidenceTakeaway.textContent = "";
   }
 
   function renderUnavailableBaseRateRow() {
     const row = document.createElement("tr");
     const cell = document.createElement("td");
     cell.colSpan = 5;
-    cell.textContent = "Correct the highlighted input to compare base rates.";
+    cell.textContent = "—";
     row.appendChild(cell);
     ui.baseRateBody.replaceChildren(row);
   }
@@ -708,7 +706,7 @@
     Object.entries(bindings).forEach(([field, elements]) => {
       const message = errors[field] || "";
       elements[0].setAttribute("aria-invalid", message ? "true" : "false");
-      elements[1].textContent = message ? "Error: " + message : "";
+      elements[1].textContent = message;
     });
   }
 
@@ -734,7 +732,7 @@
     renderShapeGuide(ui.posteriorShapeGuidePath, model.posteriorSeries, posteriorCompressed);
     ui.shapeGuideLegend.hidden = !compressedCurve;
     const scaleNote = compressedCurve
-      ? " A dotted, individually scaled guide reveals the compressed curve's shape while the main curves retain their shared density scale."
+      ? " A dotted line shows the flattened curve's shape at a larger scale."
       : "";
     const description =
       "Prior " + formatBetaParameters(model.prior) + " has mean " +
@@ -744,13 +742,11 @@
       " heads and " + model.observations.tails + " tails." + scaleNote;
     ui.densityDescription.textContent = description;
     ui.densitySvgDesc.textContent = description;
-    ui.densityScaleNote.textContent = compressedCurve
-      ? "Shared-scale note: the main curves remain directly comparable; a dotted guide rescales only the compressed curve to make its shape visible."
-      : "Both curves use one shared density scale, so their relative heights are directly comparable.";
+    ui.densityScaleNote.textContent = "";
 
     if (model.observations.total === 0) {
       ui.coinNarrative.textContent =
-        "No observations were added, so the posterior is identical to the prior: the mean and uncertainty are unchanged.";
+        "With no flips, the posterior equals the prior.";
       return;
     }
 
@@ -778,10 +774,10 @@
       ui.priorParameterCell, ui.priorMeanCell, ui.priorSdCell,
       ui.posteriorParameterCell, ui.posteriorMeanCell, ui.posteriorSdCell
     ].forEach(setDash);
-    ui.densityDescription.textContent = "The density chart is unavailable while an input is invalid.";
-    ui.densitySvgDesc.textContent = "Coin-bias chart unavailable because an input is invalid.";
-    ui.densityScaleNote.textContent = "Correct the highlighted input to restore the shared-scale comparison.";
-    ui.coinNarrative.textContent = "Correct the highlighted input to update the prior and posterior.";
+    ui.densityDescription.textContent = "No chart: an input is invalid.";
+    ui.densitySvgDesc.textContent = "No chart: an input is invalid.";
+    ui.densityScaleNote.textContent = "";
+    ui.coinNarrative.textContent = "Fix the highlighted input.";
   }
 
   function buildDensityPath(series) {
