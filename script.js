@@ -13,7 +13,7 @@
     {
       id: "medical-screening",
       label: "Medical screening",
-      description: "These screening numbers are made up for this example.",
+      description: "These numbers are made up.",
       prose: [["", " of people have the condition. "], ["The test catches ", " of them, "], ["but it also flags ", " of healthy people."]],
       question: "After a positive test, how likely is the condition?",
       priorLabel: "Condition prevalence",
@@ -597,7 +597,7 @@
         "The evidence is equally likely either way, so it is neutral: each posterior stays equal to its prior.";
     } else {
       ui.baseRateTakeaway.textContent =
-        "The test is the same in every row. Only the starting rate changes.";
+        "";
     }
   }
 
